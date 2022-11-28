@@ -7,6 +7,7 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Burst;
 using System.Runtime.CompilerServices;
+using Unity.Collections.LowLevel.Unsafe;
 
 namespace Obi
 {
@@ -174,10 +175,11 @@ namespace Obi
 
         // decomposes a quaternion in swing and twist around a given axis:
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SwingTwist(quaternion q, float3 vt, out quaternion swing, out quaternion twist)
+        public static void SwingTwist(quaternion q, float3 twistAxis, out quaternion swing, out quaternion twist)
         {
-            float3 p = vt * math.dot(q.value.xyz, vt);
-            twist = math.normalize(new quaternion(p[0], p[1], p[2], q.value.w));
+            float dot = math.dot(q.value.xyz, twistAxis);
+            float3 p = twistAxis * dot;
+            twist = math.normalizesafe(new quaternion(p[0], p[1], p[2], q.value.w));
             swing = math.mul(q, math.conjugate(twist));
         }
 
@@ -675,6 +677,29 @@ namespace Obi
             for (int i = 0; i < simplexSize; ++i)
                 center[i] = value;
             return center;
+        }
+
+        public static unsafe void RemoveRangeBurst<T>(this NativeList<T> list, int index, int count)
+            where T : unmanaged
+        {
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
+            if ((uint)index >= (uint)list.Length)
+            {
+                throw new IndexOutOfRangeException(
+                    $"Index {index} is out of range in NativeList of '{list.Length}' Length.");
+            }
+#endif
+
+            int elemSize = UnsafeUtility.SizeOf<T>();
+            byte* basePtr = (byte*)list.GetUnsafePtr();
+
+            UnsafeUtility.MemMove(basePtr + (index * elemSize), basePtr + ((index + count) * elemSize), elemSize * (list.Length - count - index));
+
+            // No easy way to change length so we just loop this unfortunately.
+            for (var i = 0; i < count; i++)
+            {
+                list.RemoveAtSwapBack(list.Length - 1);
+            }
         }
     }
 }

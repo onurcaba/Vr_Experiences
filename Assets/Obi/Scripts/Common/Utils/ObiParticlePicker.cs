@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+//using UnityEngine.InputSystem;
 
 namespace Obi
 {
@@ -41,6 +42,7 @@ namespace Obi
         void Awake()
         {
             lastMousePos = Input.mousePosition;
+            //lastMousePos = ;
         }
 
         void LateUpdate()

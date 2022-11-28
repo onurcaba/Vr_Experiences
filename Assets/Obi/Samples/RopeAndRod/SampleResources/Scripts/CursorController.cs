@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Obi;
 
 [RequireComponent(typeof(ObiRope))]
@@ -23,24 +22,22 @@ public class CursorController : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-		if (Keyboard.current[Key.W].IsPressed() && cursor != null)
+		if (Input.GetKey(KeyCode.W) && cursor != null)
         {
             if (rope.restLength > minLength)
                 cursor.ChangeLength(rope.restLength - speed * Time.deltaTime);
 		}
 
-		if (Keyboard.current[Key.S].IsPressed() && cursor != null)
+		if (Input.GetKey(KeyCode.S) && cursor != null)
         {
             cursor.ChangeLength(rope.restLength + speed * Time.deltaTime);
 		}
 
-		if (Keyboard.current[Key.A].IsPressed())
-		{
+		if (Input.GetKey(KeyCode.A)){
 			rope.transform.Translate(Vector3.left * Time.deltaTime,Space.World);
 		}
 
-		if (Keyboard.current[Key.D].IsPressed())
-		{
+		if (Input.GetKey(KeyCode.D)){
 			rope.transform.Translate(Vector3.right * Time.deltaTime,Space.World);
 		}
 

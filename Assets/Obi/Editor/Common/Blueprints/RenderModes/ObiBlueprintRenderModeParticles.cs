@@ -24,7 +24,7 @@ namespace Obi
         {
             if (shader == null)
             {
-                shader = Shader.Find("Obi/Particles");
+                shader = Shader.Find("Obi/EditorParticles");
                 if (shader != null)
                 {
                     if (!shader.isSupported)
@@ -49,7 +49,7 @@ namespace Obi
 
         public override void Refresh()
         {
-            impostorDrawer.UpdateMeshes(editor.blueprint);
+            impostorDrawer.UpdateMeshes(editor.blueprint, editor.visible, editor.tint);
         }
 
         public override void OnDestroy()

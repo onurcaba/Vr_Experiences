@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using Obi;
 
 [RequireComponent(typeof(ObiRope))]
@@ -59,20 +58,20 @@ public class RopeSweepCut : MonoBehaviour
     private void ProcessInput()
     {
         // When the user clicks the mouse, start a line cut:
-        if (Mouse.current.leftButton.wasPressedThisFrame) //Input.GetMouseButtonDown(0)
+        if (Input.GetMouseButtonDown(0))
         {
-            cutStartPosition = Mouse.current.position.ReadValue();
+            cutStartPosition = Input.mousePosition;
             lineRenderer.SetPosition(0, cam.ScreenToWorldPoint(new Vector3(cutStartPosition.x, cutStartPosition.y, 0.5f)));
             lineRenderer.enabled = true;
         }
 
         if (lineRenderer.enabled)
-            lineRenderer.SetPosition(1, cam.ScreenToWorldPoint(new Vector3(Mouse.current.position.ReadValue().x, Mouse.current.position.ReadValue().y, 0.5f)));
+            lineRenderer.SetPosition(1, cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0.5f)));
 
         // When the user lifts the mouse, proceed to cut.
-        if (Mouse.current.leftButton.wasReleasedThisFrame)
+        if (Input.GetMouseButtonUp(0))
         {
-            ScreenSpaceCut(cutStartPosition, Mouse.current.position.ReadValue());  
+            ScreenSpaceCut(cutStartPosition, Input.mousePosition);
             lineRenderer.enabled = false;
         }
     }
