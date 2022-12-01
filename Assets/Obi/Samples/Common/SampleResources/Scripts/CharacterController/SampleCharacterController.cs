@@ -1,19 +1,27 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 
 namespace Obi{
 
 	[RequireComponent(typeof (ObiCharacter))]
 	public class SampleCharacterController : MonoBehaviour {
+
+        SimpleControls simpleControls;
 	
 		private ObiCharacter m_Character; 			// A reference to the ThirdPersonCharacter on the object
         private Transform m_Cam;                  // A reference to the main camera in the scenes transform
         private Vector3 m_CamForward;             // The current forward direction of the camera
         private Vector3 m_Move;
         private bool m_Jump;                      // the world-relative desired move direction, calculated from the camForward and user input.
-        
+
+
+        private void Awake()
+        {
+            simpleControls = new SimpleControls();
+        }
         private void Start()
         {
             // get the transform of the main camera
@@ -37,13 +45,19 @@ namespace Obi{
         {
             if (!m_Jump)
             {
-                m_Jump = Input.GetButtonDown("Jump");
+                //m_Jump = Input.GetButtonDown("Jump");
+                m_Jump = simpleControls.gameplay.jump.IsPressed();
             }
 
 			// read inputs
-			float h = Input.GetAxis("Horizontal");
-            float v = Input.GetAxis("Vertical");
-            bool crouch = Input.GetKey(KeyCode.C);
+			//float h = Input.GetAxis("Horizontal");
+			float h = simpleControls.gameplay.move.ReadValue<Vector2>().x;
+            //float v = Input.GetAxis("Vertical");
+            float v = simpleControls.gameplay.move.ReadValue<Vector2>().y;
+
+
+            //bool crouch = Input.GetKey(KeyCode.C);
+            bool crouch = Keyboard.current.cKey.IsPressed();
 
             // calculate move direction to pass to character
             if (m_Cam != null)
@@ -59,7 +73,7 @@ namespace Obi{
             }
 			#if !MOBILE_INPUT
 				// walk speed multiplier
-	       	 	if (Input.GetKey(KeyCode.LeftShift)) m_Move *= 0.5f;
+	       	 	if (Keyboard.current.leftShiftKey.IsPressed() /*Input.GetKey(KeyCode.LeftShift)*/) m_Move *= 0.5f;
 			#endif
 	
             // pass all parameters to the character control script
